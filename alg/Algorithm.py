@@ -10,7 +10,6 @@ from dataclasses import dataclass, field
 WSTATION = 6
 SIMULATION_TIME = 8.0
 
-# Global worker ID counter (z in your description)
 _WORKER_ID_COUNTER = 1
 
 def get_next_worker_id() -> int:
@@ -167,14 +166,12 @@ def fire_worker_from_assignment(worker_id: str, assignment: Dict[int, List[str]]
     """
     new_assignment = {station: [] for station in range(1, WSTATION + 1)}
     
-    # Collect all remaining workers in order
     all_workers = []
     for station in range(1, WSTATION + 1):
         for wid in assignment[station]:
             if wid != worker_id:
                 all_workers.append(wid)
     
-    # Redistribute sequentially
     for idx, wid in enumerate(all_workers):
         station = (idx % WSTATION) + 1
         new_assignment[station].append(wid)
@@ -318,7 +315,7 @@ def systematic_data_collection_ui(
     cycle = 2
     
     for position_idx in range(max_workers_per_station):
-        # Skip if all workers at this position have complete data
+
         if not check_position_needs_testing(factory_workers, original_assignment, position_idx):
             if cycle_callback:
                 cycle_callback({
@@ -359,7 +356,6 @@ def systematic_data_collection_ui(
                 
                 swapped_worker = rotated_workers[idx]
                 
-                # Skip recording if worker already has data for this station
                 if factory_worker_dict[swapped_worker].has_data_for_station(station_id):
                     continue
                 
@@ -566,7 +562,6 @@ def find_optimal_assignment(
     
     avg_performance = total_expected_performance / total_workers if total_workers > 0 else 0
     
-    # Calculate worker efficiencies in their assigned stations
     worker_efficiencies = []
     for station_id, worker_ids in optimal_assignment.items():
         for worker_id in worker_ids:
@@ -577,7 +572,6 @@ def find_optimal_assignment(
                 'efficiency': efficiency
             })
     
-    # Sort for leaderboards
     worker_efficiencies.sort(key=lambda x: x['efficiency'], reverse=True)
     best_workers = worker_efficiencies[:3]
     worst_workers = worker_efficiencies[-3:]
@@ -592,4 +586,5 @@ def find_optimal_assignment(
         'worst_workers': worst_workers
     }
     
+
     return optimal_assignment, results
